@@ -92,32 +92,49 @@ exports.find = async (req, res, next) => {
     next(error);
   }
 };
-exports.delete = async (req, res, next) => {
+exports.deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({ username: req.params.username });
+    const user = await User.findById(req.params.id);
     await user.delete();
-  
-    res.json({message:'ok'});
+	const { sortType = '-created' } = req.body;
+    const users = await User.find().sort(sortType);
+    res.json(users);
   } catch (error) {
     next(error);
   }
 };
-exports.create = async (req, res, next) => {
+exports.createUser = async (req, res, next) => {
   try {
     const comp={};
     comp.username=req.body.username;
-    comp.password=hashpassword(req.body.password);
-    comp.fullname=req.body.fullname;
+    comp.password=await hashPassword(req.body.password);
     const user = new User(comp);
 
     await user.save();
-  
-    res.json({message:'ok'});
+	const { sortType = '-created' } = req.body;
+    const users = await User.find().sort(sortType);
+    res.json(users);
   } catch (error) {
+	  console.log(error);
     next(error);
   }
 };
-
+exports.editUser = async (req, res, next) => {
+  try {
+	const user = await User.findById(req.params.id);
+	if(req.body.username!=='')
+		user.username=req.body.username;
+	if(req.body.password!=='')
+		user.password=await hashPassword(req.body.password);
+    await user.save();
+	const { sortType = '-created' } = req.body;
+    const users = await User.find().sort(sortType);
+    res.json(users);
+  } catch (error) {
+	  console.log(error);
+    next(error);
+  }
+};
 exports.validateLogin = [
   // body('g-recaptcha-response')
   //   .exists()

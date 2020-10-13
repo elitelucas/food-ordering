@@ -3,7 +3,10 @@ const {
   authenticate,
   listUsers,
   search,
-  find
+  find,
+  createUser,
+  editUser,
+  deleteUser
 } = require('./controllers/users');
 const {
   // listTier2,
@@ -36,7 +39,9 @@ router.post('/authenticate', validateLogin, authenticate);
 router.get('/admin/users', [requireAuth,requireAdmin], listUsers);
 router.get('/admin/users/:search', [requireAuth,requireAdmin], search);
 router.get('/admin/user/:username', [requireAuth,requireAdmin],  find);
-
+router.post('/admin/user', [requireAuth,requireAdmin,validateLogin], createUser);
+router.put('/admin/user/:id', [requireAuth,requireAdmin], editUser);
+router.delete('/admin/user/:id', [requireAuth,requireAdmin], deleteUser);
 // router.get('/admin/tier2', [requireAuth,requireAdmin],  listTier2);
 // router.patch('/admin/tier2/:id', [requireAuth,requireAdmin],  patchTier2);
 // router.get('/admin/tier2/image/:id', [requireAuth,requireAdmin],  imageTier2);
